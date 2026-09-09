@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#160a06">
+<title>FURNACE - Density Training for Cuts</title>
+<style>
+:root{--bg:#160a06;--panel:#221009;--panel2:#2b150b;--line:#4a2413;--ink:#f5e6d8;--dim:#c9a68a;--ember:#ff7a2f;--ember2:#ffb347;--good:#7cf29c;--bad:#ff5d5d}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;padding:14px 12px 110px;background-image:radial-gradient(circle at 50% 0%, #33150a 0%, var(--bg) 65%)}
+h1{font-size:22px;letter-spacing:2px;color:var(--ember);text-shadow:0 0 18px rgba(255,122,47,.35)}
+.sub{color:var(--dim);font-size:12px;margin-top:2px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}
+.daybtn{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:10px;color:var(--ink);cursor:pointer}
+.daybtn .dt{font-weight:700;font-size:15px}
+.daybtn .dd{color:var(--dim);font-size:11px;margin-top:2px}
+.daybtn .arrow{color:var(--ember);font-size:18px}
+.restday{border-style:dashed;opacity:.75}
+.circh{margin-top:16px;font-size:11px;letter-spacing:1.5px;color:var(--ember2);display:flex;justify-content:space-between}
+.circh .rounds{color:var(--dim)}
+.card{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:8px}
+.card .exname{font-weight:700;font-size:14px}
+.card .pairtag{font-size:10px;color:var(--ember2);margin-left:6px}
+.chips{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.chip{font-size:10px;color:var(--dim);border:1px solid var(--line);border-radius:20px;padding:3px 9px}
+.chip.hot{color:var(--ember2);border-color:var(--ember)}
+.setsrow{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.setbtn{min-width:52px;padding:8px 6px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--dim);font-size:11px;text-align:center;cursor:pointer}
+.setbtn.done{background:var(--ember);border-color:var(--ember);color:#1a0b04;font-weight:700}
+.setbtn .sr{font-size:9px;display:block;font-weight:400}
+.logrow{display:flex;gap:6px;margin-top:8px}
+.logrow input{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:8px;font-size:13px;text-align:center;min-width:0}
+.cue{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);color:var(--dim);font-size:11px;line-height:1.5}
+.vlink{display:inline-block;margin-top:6px;font-size:11px;color:var(--ember2);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:5px 10px}
+.varsel{width:100%;margin-top:8px;background:var(--panel);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:8px;font-size:12px}
+#timerbar{position:fixed;left:0;right:0;bottom:0;background:#1c0d07;border-top:2px solid var(--ember);padding:10px 14px 16px;display:none;z-index:50}
+#timerbar.on{display:block}
+#tcount{font-size:30px;font-weight:800;color:var(--ember);text-align:center;font-variant-numeric:tabular-nums}
+.tpresets{display:flex;gap:8px;justify-content:center;margin-top:6px}
+.tpresets button{background:var(--panel);border:1px solid var(--line);color:var(--dim);border-radius:8px;padding:6px 14px;font-size:12px;cursor:pointer}
+.tpresets button.on{border-color:var(--ember);color:var(--ember)}
+#tlabel{text-align:center;color:var(--dim);font-size:11px;margin-top:2px}
+.backlink{background:none;border:none;color:var(--dim);font-size:13px;text-decoration:underline;padding:12px;cursor:pointer}
+.toggle{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:10px}
+.toggle button{flex:1;padding:9px;background:var(--panel);color:var(--dim);border:none;font-size:11px;cursor:pointer}
+.toggle button.on{background:var(--ember);color:#1a0b04;font-weight:700}
+.fincard{border:1px dashed var(--ember);border-radius:12px;padding:12px;margin-top:14px;background:rgba(255,122,47,.06)}
+.fincard .ft{color:var(--ember2);font-size:11px;letter-spacing:1.5px}
+.fincard .fd{font-size:13px;margin-top:4px}
+.volnote{color:var(--dim);font-size:10px;margin-top:14px;line-height:1.5;text-align:center}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="timerbar">
+  <div id="tcount">45</div>
+  <div id="tlabel">REST - tap time to pause</div>
+  <div class="tpresets">
+    <button data-t="30">30s</button><button data-t="45" class="on">45s</button><button data-t="60">60s</button><button data-t="90">90s</button><button id="tstop">SKIP</button>
+  </div>
+</div>
+<script>
+/* ============ FURNACE program data (original composition) ============ */
+const DAYS = [
+{id:'upperA', name:'UPPER A', desc:'Chest/back density, arms + delts', circuits:[
+  {label:'CIRCUIT A', rounds:4, pair:[
+    {n:'Low Incline Dumbbell Press', r:'12-15', v:'inclinedb', cue:'Set the bench 15-30 degrees. Lower under control, drive up without locking out hard - keep tension on the pec.'},
+    {n:'Seated Cable Row (neutral grip)', r:'12-15', v:'cablerow', cue:'Chest tall, pull to the lower ribs, squeeze the shoulder blades for a full second.'}]},
+  {label:'CIRCUIT B', rounds:2, pair:[
+    {n:'Machine Shoulder Press', r:'12-15', v:'machpress', cue:'Full range, no bounce at the bottom. The machine is your friend on a cut - stable and safe near fatigue.'},
+    {n:'Straight-Arm Lat Pulldown', r:'12-15', v:'straightarm', cue:'Arms nearly straight, sweep the bar to your thighs, feel the lat stretch at the top.'}]},
+  {label:'CIRCUIT C', rounds:2, pair:[
+    {n:'Cable Rope Pushdown', r:'12-20', v:'pushdown', cue:'Elbows pinned, split the rope at the bottom, control the way up.'},
+    {n:'Face-Away Bayesian Cable Curl', r:'12-20', v:'bayesiancurl', cue:'Face away from the stack, arm behind you - that stretch position is where the growth lives.'}]},
+  {label:'CIRCUIT D', rounds:2, pair:[
+    {n:'Machine Lateral Raise', r:'15-20', v:'latraise', cue:'Lead with the elbow, stop at shoulder height, slow negative.'},
+    {n:'Reverse Pec Deck', r:'15-20', v:'revpecdeck', cue:'Rear delts, not traps. Keep the shoulders down and sweep wide.'}]},
+], finisher:{t:'FINISHER - LOADED CARRIES', d:'Farmer carries, 10 minutes. Heavy dumbbells, tall posture, short quick steps. Grip is the point.'}},
+{id:'lowerA', name:'LOWER A', desc:'Quad/ham machine density', circuits:[
+  {label:'CIRCUIT A', rounds:4, pair:[
+    {n:'Hack Squat', r:'12-15', v:'hacksquat', cue:'Full depth, drive through the whole foot. Machines let you push close to failure safely - use that.'},
+    {n:'Lying Leg Curl', r:'12-15', v:'lyingcurl', cue:'Hips down, squeeze at the top, 2-second negative.'}]},
+  {label:'CIRCUIT B', rounds:2, pair:[
+    {n:'Barbell Hip Thrust', r:'12-15', v:'hipthrust', cue:'Chin tucked, ribs down, lock out hard with the glutes - not the lower back.'},
+    {n:'Leg Extension', r:'12-15', v:'legext', cue:'One-second squeeze at the top of every rep. No swinging.'}]},
+  {label:'CIRCUIT C', rounds:2, pair:[
+    {n:'Standing Calf Raise', r:'15-20', v:'standingcalf', cue:'Full stretch at the bottom, full squeeze at the top. Straight knee hits the gastroc.'},
+    {n:'Cable Rope Crunch', r:'15-20', v:'ropecrunch', cue:'Curl the spine, bring ribs to hips - do not just bend at the waist.'}]},
+], finisher:{t:'FINISHER - ZONE 2', d:'Incline walk, 10 minutes. You should be able to talk, but just barely.'}},
+{id:'rest', name:'REST', desc:'Grow day. Walk, eat protein, sleep.', rest:true},
+{id:'upperB', name:'UPPER B', desc:'Flat press + seal row density', circuits:[
+  {label:'CIRCUIT A', rounds:4, pair:[
+    {n:'Flat Dumbbell Bench Press', r:'12-15', v:'dbbench', cue:'Deep stretch at the bottom, press up and slightly in. Dumbbells let the pecs do the work.'},
+    {n:'Seal Row (chest-supported)', r:'12-15', v:'sealrow', cue:'Chest glued to the bench. No lower back, all upper back - that is why it made the cut.'}]},
+  {label:'CIRCUIT B', rounds:2, pair:[
+    {n:'Machine Shoulder Press', r:'8-12', v:'machpress', cue:'Heavier today - fewer reps, same control.'},
+    {n:'Assisted Pull-Up', r:'8-12', v:'pullup', cue:'Full dead hang to chin over bar. Use enough assistance to keep every rep clean.'}]},
+  {label:'CIRCUIT C', rounds:2, pair:[
+    {n:'Skull Crushers', r:'12-15', v:'skullcrusher', cue:'Elbows stay put, lower behind the head for the long-head stretch.'},
+    {n:'EZ-Bar Curl', r:'12-15', v:'ezcurl', cue:'No swing. The last two reps should be ugly but honest.'}]},
+  {label:'CIRCUIT D', rounds:2, pair:[
+    {n:'Cross-Body Cable Y-Raise', r:'15-20', v:'yraise', cue:'Cable across the body, raise into a Y. Light weight, perfect line.'},
+    {n:'Face Pull with External Rotation', r:'15-20', v:'facepull', cue:'Pull to the forehead, rotate the knuckles back. Shoulder health insurance.'}]},
+], finisher:{t:'FINISHER - SLED OR CARRY', d:'Sled pushes or another 10 minutes of farmer carries. Legs fresh tomorrow - keep it upper-body friendly.'}},
+{id:'lowerB', name:'LOWER B', desc:'Unilateral + hinge density', circuits:[
+  {label:'CIRCUIT A', rounds:3, pair:[
+    {n:'Bulgarian Split Squat', r:'12-15 /leg', v:'bulgarian', cue:'Long stride, torso tall, drop straight down. Brutal and worth it.'},
+    {n:'Seated Leg Curl', r:'12-15', v:'seatedcurl', cue:'The seated position stretches the hamstring under load - the best-supported hamstring builder.'}]},
+  {label:'CIRCUIT B', rounds:2, pair:[
+    {n:'Goblet Squat', r:'12-15', v:'goblet', cue:'Elbows inside the knees, sit deep, drive up tall. Any gym, any home - that is why it is the default.', vars:['Goblet Squat','Belt Squat']},
+    {n:'45-Degree Back Extension', r:'12-15', v:'backext', cue:'Round slightly, hinge at the hips, finish with the glutes.'}]},
+  {label:'CIRCUIT C', rounds:2, pair:[
+    {n:'Seated Calf Raise', r:'15-20', v:'seatedcalf', cue:'Bent knee hits the soleus. Pause at the bottom.'},
+    {n:'Pallof Press', r:'15-20 /side', v:'pallof', cue:'Resist the rotation - ribs down, press straight out, hold.'}]},
+], finisher:{t:'FINISHER - ZONE 2', d:'Incline walk or easy bike, 10 minutes. Flush the legs, keep the engine hot.'}}
+];
+/* videos: neutral third-party, high-production (filled from curated scrape) */
+const VIDEOS = {
+"backext":"https://www.youtube.com/watch?v=-MTjHC3NC2s",
+"bayesiancurl":"https://www.youtube.com/watch?v=4O24gFksZ04",
+"bulgarian":"https://www.youtube.com/watch?v=hiLF_pF3EJM",
+"cablerow":"https://www.youtube.com/watch?v=vwHG9Jfu4sw",
+"dbbench":"https://www.youtube.com/watch?v=O7ECGhZj_Hc",
+"ezcurl":"https://www.youtube.com/watch?v=kwG2ipFRgfo",
+"facepull":"https://www.youtube.com/watch?v=WVq3JRs41dY",
+"goblet":"https://www.youtube.com/watch?v=gCESNsDsbqk",
+"hacksquat":"https://www.youtube.com/watch?v=0tn5K9NlCfo",
+"hipthrust":"https://www.youtube.com/watch?v=5S8SApGU_Lk",
+"inclinedb":"https://www.youtube.com/watch?v=IP4oeKh1Sd4",
+"latraise":"https://www.youtube.com/watch?v=NNAs8jx_zJI",
+"legext":"https://www.youtube.com/watch?v=YyvSfVjQeL0",
+"lyingcurl":"https://www.youtube.com/watch?v=jxctD6fL_FQ",
+"machpress":"https://www.youtube.com/watch?v=3R14MnZbcpw",
+"pallof":"https://www.youtube.com/watch?v=QGrE4L2o4J0",
+"pullup":"https://www.youtube.com/watch?v=gx0RWT7WbmA",
+"pushdown":"https://www.youtube.com/watch?v=n2FSCB4vRSA",
+"revpecdeck":"https://www.youtube.com/watch?v=v0rJuhEa59c",
+"ropecrunch":"https://www.youtube.com/watch?v=jBtiDLz0y7s",
+"sealrow":"https://www.youtube.com/watch?v=tvk5Fb2K0Ns",
+"seatedcalf":"https://www.youtube.com/watch?v=BxfKOyI8sUg",
+"seatedcurl":"https://www.youtube.com/watch?v=t9sTSr-JYSs",
+"skullcrusher":"https://www.youtube.com/watch?v=NIWKqcmpBug",
+"standingcalf":"https://www.youtube.com/watch?v=Km0QS46bTEA",
+"straightarm":"https://www.youtube.com/watch?v=WDOV2PDpkiU",
+"yraise":"https://www.youtube.com/watch?v=oDSGrucETfw"
+};
+const RIR = '2-3 RIR';
+const LS_KEY = 'forge.furnace.v1';
+
+/* ============ state ============ */
+function load(){try{return JSON.parse(localStorage.getItem(LS_KEY))||{}}catch(e){return{}}}
+function save(s){localStorage.setItem(LS_KEY,JSON.stringify(s))}
+let S = load(); if(!S.deficit) S.deficit='standard';
+function dayLog(did){S.days=S.days||{};S.days[did]=S.days[did]||{};return S.days[did]}
+function todayISO(){const d=new Date();return d.toISOString().slice(0,10)}
+
+/* ============ views ============ */
+const app=document.getElementById('app');
+function home(){
+  const hist=S.history||{};
+  app.innerHTML='<h1>FURNACE</h1><div class="sub">DENSITY TRAINING FOR THE CUT - burn hot, keep the muscle</div>'
+  +'<div class="panel"><div style="font-size:11px;color:var(--dim)">YOUR DEFICIT</div><div class="toggle">'
+  +'<button id="defS" class="'+(S.deficit==='standard'?'on':'')+'">STANDARD (4-round circuits)</button>'
+  +'<button id="defA" class="'+(S.deficit==='aggressive'?'on':'')+'">AGGRESSIVE (3-round)</button></div>'
+  +'<div class="sub" style="margin-top:8px">Bigger deficit = less recovery = one fewer round on primary circuits. Every set: '+RIR+', rest 30-45s.</div></div>'
+  + DAYS.map((d,i)=>'<button class="daybtn'+(d.rest?' restday':'')+'" data-i="'+i+'"><div><div class="dt">'+d.name+'</div><div class="dd">'+d.desc+'</div></div><span class="arrow">&#9654;</span></button>').join('')
+  +'<div class="volnote">10-14 hard sets per muscle per week at high density. Retention is the win on a cut - growth is a bonus.<br>Missed a day? The furnace just resumes where you left off.</div>';
+  document.getElementById('defS').onclick=()=>{S.deficit='standard';save(S);home();};
+  document.getElementById('defA').onclick=()=>{S.deficit='aggressive';save(S);home();};
+  app.querySelectorAll('.daybtn').forEach(b=>b.onclick=()=>day(+b.dataset.i));
+}
+function roundsFor(c){return (S.deficit==='aggressive'&&c.rounds>=4)?c.rounds-1:c.rounds}
+function day(i){
+  const d=DAYS[i];
+  if(d.rest){app.innerHTML='<h1>REST DAY</h1><div class="sub">The furnace banks heat today.</div><div class="panel"><p style="line-height:1.7;font-size:13px">Walk 8-10k steps. Hit your protein. Sleep like it is your job.<br><br>Density training only works if recovery shows up - especially in a deficit.</p></div><button class="backlink" id="bk">&lt; BACK</button>';document.getElementById('bk').onclick=home;return;}
+  const log=dayLog(d.id);
+  let h='<h1>'+d.name+'</h1><div class="sub">'+d.desc+' - '+RIR+', rest 30-45s between EVERY set, including across the pair</div>';
+  d.circuits.forEach((c,ci)=>{
+    h+='<div class="circh"><span>'+c.label+' - ALTERNATE THE PAIR</span><span class="rounds">'+roundsFor(c)+' ROUNDS EACH</span></div>';
+    c.pair.forEach((ex,pi)=>{
+      const key=ci+'-'+pi;
+      const done=(log[key]&&log[key].sets)||[];
+      const varName=(log[key]&&log[key].varName)||ex.n;
+      h+='<div class="card"><div><span class="exname">'+varName+'</span><span class="pairtag">PAIR '+(pi===0?'A':'B')+'</span></div>'
+      +'<div class="chips"><span class="chip hot">'+ex.r+' REPS</span><span class="chip">'+RIR+'</span><span class="chip">REST 30-45s</span></div>'
+      +'<div class="setsrow">'+Array.from({length:roundsFor(c)},(_,s)=>'<button class="setbtn'+(done[s]?' done':'')+'" data-k="'+key+'" data-s="'+s+'">SET '+(s+1)+'<span class="sr">'+(done[s]?done[s].w+'x'+done[s].r:'tap')+'</span></button>').join('')+'</div>'
+      +'<div class="logrow"><input id="w-'+key+'" inputmode="decimal" placeholder="lb"><input id="r-'+key+'" inputmode="numeric" placeholder="reps"></div>'
+      +(ex.vars?'<select class="varsel" data-k="'+key+'">'+ex.vars.map(v=>'<option'+(v===varName?' selected':'')+'>'+v+'</option>').join('')+'</select>':'')
+      +'<div class="cue">'+ex.cue+'</div>'
+      +(VIDEOS[ex.v]?'<a class="vlink" href="'+VIDEOS[ex.v]+'" target="_blank" rel="noopener">&#9654; FORM VIDEO</a>':'')
+      +'</div>';
+    });
+  });
+  h+='<div class="fincard"><div class="ft">'+d.finisher.t+'</div><div class="fd">'+d.finisher.d+'</div></div>';
+  h+='<div style="text-align:center"><button class="backlink" id="bk">&lt; BACK TO WEEK</button></div>';
+  app.innerHTML=h;
+  document.getElementById('bk').onclick=home;
+  app.querySelectorAll('.setbtn').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.k, s=+b.dataset.s;
+    log[k]=log[k]||{sets:[]};
+    if(log[k].sets[s]){delete log[k].sets[s];} // untap to clear
+    else{
+      const w=parseFloat(document.getElementById('w-'+k).value)||0;
+      const r=parseInt(document.getElementById('r-'+k).value)||0;
+      log[k].sets[s]={w:w,r:r};
+    }
+    save(S); startTimer(45); day(i);
+  });
+  app.querySelectorAll('.varsel').forEach(sel=>sel.onchange=()=>{
+    const k=sel.dataset.k; log[k]=log[k]||{sets:[]}; log[k].varName=sel.value; save(S);
+  });
+}
+
+/* ============ rest timer ============ */
+let tInt=null,tLeft=45;
+function startTimer(sec){
+  tLeft=sec; const bar=document.getElementById('timerbar');bar.classList.add('on');
+  clearInterval(tInt); tick();
+  tInt=setInterval(()=>{tLeft--; tick(); if(tLeft<=0){clearInterval(tInt); bar.classList.remove('on'); if(navigator.vibrate)navigator.vibrate(200);}},1000);
+}
+function tick(){document.getElementById('tcount').textContent=tLeft;}
+document.querySelectorAll('.tpresets button[data-t]').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tpresets button[data-t]').forEach(x=>x.classList.remove('on'));b.classList.add('on');startTimer(+b.dataset.t);
+});
+document.getElementById('tstop').onclick=()=>{clearInterval(tInt);document.getElementById('timerbar').classList.remove('on');};
+document.getElementById('tcount').onclick=()=>{if(tInt){clearInterval(tInt);tInt=null;}else if(tLeft>0){startTimer(tLeft);}};
+
+home();
+</script>
+</body>
+</html>
