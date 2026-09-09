@@ -7,18 +7,20 @@
 <meta name="theme-color" content="#160a06">
 <title>FURNACE - Density Training for Cuts</title>
 <style>
-:root{--bg:#160a06;--panel:#221009;--panel2:#2b150b;--line:#4a2413;--ink:#f5e6d8;--dim:#c9a68a;--ember:#ff7a2f;--ember2:#ffb347;--good:#7cf29c;--bad:#ff5d5d}
+:root{--bg:#0f0a08;--panel:#171009;--panel2:#1d150c;--line:#33241a;--ink:#f5ece4;--dim:#b39c8a;--ember:#ff7a2f;--ember2:#ffb347;--good:#7cf29c;--bad:#ff5d5d}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;padding:14px 12px 110px;background-image:radial-gradient(circle at 50% 0%, #33150a 0%, var(--bg) 65%)}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;padding:14px 12px 110px;background-image:radial-gradient(circle at 50% 0%, #241207 0%, var(--bg) 65%)}
 h1{font-size:22px;letter-spacing:2px;color:var(--ember);text-shadow:0 0 18px rgba(255,122,47,.35)}
 .sub{color:var(--dim);font-size:12px;margin-top:2px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}
+.panel .pt{font-size:11px;letter-spacing:1.5px;color:var(--ember2);margin-bottom:6px}
+.daynum{font-size:10px;color:var(--ember2);letter-spacing:1.5px}
 .daybtn{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:10px;color:var(--ink);cursor:pointer}
 .daybtn .dt{font-weight:700;font-size:15px}
 .daybtn .dd{color:var(--dim);font-size:11px;margin-top:2px}
 .daybtn .arrow{color:var(--ember);font-size:18px}
 .restday{border-style:dashed;opacity:.75}
-.circh{margin-top:16px;font-size:11px;letter-spacing:1.5px;color:var(--ember2);display:flex;justify-content:space-between}
+.circh{margin-top:16px;font-size:11px;letter-spacing:1.5px;color:var(--ember2);display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:5px}
 .circh .rounds{color:var(--dim)}
 .card{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:8px}
 .card .exname{font-weight:700;font-size:14px}
@@ -161,11 +163,11 @@ const app=document.getElementById('app');
 function home(){
   const hist=S.history||{};
   app.innerHTML='<h1>FURNACE</h1><div class="sub">DENSITY TRAINING FOR THE CUT - burn hot, keep the muscle</div>'
-  +'<div class="panel"><div style="font-size:11px;color:var(--dim)">YOUR DEFICIT</div><div class="toggle">'
+  +'<div class="panel"><div class="pt">YOUR DEFICIT</div><div class="toggle">'
   +'<button id="defS" class="'+(S.deficit==='standard'?'on':'')+'">STANDARD (4-round circuits)</button>'
   +'<button id="defA" class="'+(S.deficit==='aggressive'?'on':'')+'">AGGRESSIVE (3-round)</button></div>'
   +'<div class="sub" style="margin-top:8px">Bigger deficit = less recovery = one fewer round on primary circuits. Every set: '+RIR+', rest 30-45s.</div></div>'
-  + DAYS.map((d,i)=>'<button class="daybtn'+(d.rest?' restday':'')+'" data-i="'+i+'"><div><div class="dt">'+d.name+'</div><div class="dd">'+d.desc+'</div></div><span class="arrow">&#9654;</span></button>').join('')
+  + DAYS.map((d,i)=>'<button class="daybtn'+(d.rest?' restday':'')+'" data-i="'+i+'"><div><div class="daynum">DAY '+(i+1)+'</div><div class="dt">'+d.name+'</div><div class="dd">'+d.desc+'</div></div><span class="arrow">&#9654;</span></button>').join('')
   +'<div class="volnote">10-14 hard sets per muscle per week at high density. Retention is the win on a cut - growth is a bonus.<br>Missed a day? The furnace just resumes where you left off.</div>';
   document.getElementById('defS').onclick=()=>{S.deficit='standard';save(S);home();};
   document.getElementById('defA').onclick=()=>{S.deficit='aggressive';save(S);home();};
@@ -220,7 +222,7 @@ function startTimer(sec){
   clearInterval(tInt); tick();
   tInt=setInterval(()=>{tLeft--; tick(); if(tLeft<=0){clearInterval(tInt); bar.classList.remove('on'); if(navigator.vibrate)navigator.vibrate(200);}},1000);
 }
-function tick(){document.getElementById('tcount').textContent=tLeft;}
+function tick(){const m=Math.floor(tLeft/60),s=tLeft%60;document.getElementById('tcount').textContent=(tLeft>=60)?m+':'+String(s).padStart(2,'0'):tLeft;}
 document.querySelectorAll('.tpresets button[data-t]').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.tpresets button[data-t]').forEach(x=>x.classList.remove('on'));b.classList.add('on');startTimer(+b.dataset.t);
 });
