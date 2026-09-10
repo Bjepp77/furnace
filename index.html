@@ -81,17 +81,20 @@ const DAYS = [
     {n:'Machine Lateral Raise', r:'15-20', v:'latraise', cue:'Lead with the elbow, stop at shoulder height, slow negative.'},
     {n:'Reverse Pec Deck', r:'15-20', v:'revpecdeck', cue:'Rear delts, not traps. Keep the shoulders down and sweep wide.'}]},
 ], finisher:{t:'FINISHER - LOADED CARRIES', d:'Farmer carries, 10 minutes. Heavy dumbbells, tall posture, short quick steps. Grip is the point.'}},
-{id:'lowerA', name:'LOWER A', desc:'Quad/ham machine density', circuits:[
-  {label:'CIRCUIT A', rounds:4, pair:[
-    {n:'Hack Squat', r:'12-15', v:'hacksquat', cue:'Full depth, drive through the whole foot. Machines let you push close to failure safely - use that.'},
-    {n:'Lying Leg Curl', r:'12-15', v:'lyingcurl', cue:'Hips down, squeeze at the top, 2-second negative.'}]},
-  {label:'CIRCUIT B', rounds:2, pair:[
-    {n:'Barbell Hip Thrust', r:'12-15', v:'hipthrust', cue:'Chin tucked, ribs down, lock out hard with the glutes - not the lower back.'},
-    {n:'Leg Extension', r:'12-15', v:'legext', cue:'One-second squeeze at the top of every rep. No swinging.'}]},
+{id:'lowerA', name:'LOWER A', desc:'Trench A - bilateral density', circuits:[
+  {label:'CIRCUIT A', rounds:2, pair:[
+    {n:'Leg Extension', r:'12-15', v:'legext', cue:'Trench pre-fatigue slot - prime the quads before the squat. One-second squeeze at the top, no swinging.'},
+    {n:'Hip Adduction Machine', r:'12-15', cue:'Trench slot. Largest comfortable range, control the negative, squeeze at the top.'}]},
+  {label:'CIRCUIT B', rounds:4, pair:[
+    {n:'Hack Squat', r:'8-12', v:'hacksquat', cue:'Trench bilateral squat pattern. Full depth, drive through the whole foot. Machines let you push close to failure safely - use that.'},
+    {n:'Romanian Deadlift', r:'8-12', cue:'Trench hip hinge slot. Hips back, weight close, finish by driving the hips through. Straps if grip goes first.'}]},
   {label:'CIRCUIT C', rounds:2, pair:[
-    {n:'Standing Calf Raise', r:'15-20', v:'standingcalf', cue:'Full stretch at the bottom, full squeeze at the top. Straight knee hits the gastroc.'},
-    {n:'Cable Rope Crunch', r:'15-20', v:'ropecrunch', cue:'Curl the spine, bring ribs to hips - do not just bend at the waist.'}]},
-], finisher:{t:'FINISHER - ZONE 2', d:'Incline walk, 10 minutes. You should be able to talk, but just barely.'}},
+    {n:'Seated Leg Curl', r:'12-15', v:'seatedcurl', cue:'Trench-preferred curl. Full knee extension each rep, squeeze at the top, 2-second negative.'},
+    {n:'Standing Calf Raise', r:'12-15', v:'standingcalf', cue:'Trench straight-leg calf set. Deep stretch, pause at the bottom, full squeeze at the top.'}]},
+  {label:'CIRCUIT D', rounds:2, pair:[
+    {n:'Hip Abduction Machine', r:'12-15', cue:'Trench slot. Pelvis level, lead with the outside of the hip, pause in the lengthened position.'},
+    {n:'Sit-Up', r:'12-15', cue:'Trench lumbar flexion slot. Initiate with lumbar flexion, posterior pelvic tilt at the top - not a hip-flexor swing.'}]},
+], finisher:{t:'FINISHER - POGO + ZONE 2', d:'2 minutes of pogo jumps (Trench primer - ankles springy, quiet landings), then 8 minutes of incline walking. You should be able to talk, but just barely.'}},
 {id:'rest', name:'REST', desc:'Grow day. Walk, eat protein, sleep.', rest:true},
 {id:'upperB', name:'UPPER B', desc:'Flat press + seal row density', circuits:[
   {label:'CIRCUIT A', rounds:4, pair:[
@@ -107,17 +110,20 @@ const DAYS = [
     {n:'Cross-Body Cable Y-Raise', r:'15-20', v:'yraise', cue:'Cable across the body, raise into a Y. Light weight, perfect line.'},
     {n:'Face Pull with External Rotation', r:'15-20', v:'facepull', cue:'Pull to the forehead, rotate the knuckles back. Shoulder health insurance.'}]},
 ], finisher:{t:'FINISHER - SLED OR CARRY', d:'Sled pushes or another 10 minutes of farmer carries. Legs fresh tomorrow - keep it upper-body friendly.'}},
-{id:'lowerB', name:'LOWER B', desc:'Unilateral + hinge density', circuits:[
-  {label:'CIRCUIT A', rounds:3, pair:[
-    {n:'Bulgarian Split Squat', r:'12-15 /leg', v:'bulgarian', cue:'Long stride, torso tall, drop straight down. Brutal and worth it.'},
-    {n:'Seated Leg Curl', r:'12-15', v:'seatedcurl', cue:'The seated position stretches the hamstring under load - the best-supported hamstring builder.'}]},
-  {label:'CIRCUIT B', rounds:2, pair:[
-    {n:'Goblet Squat', r:'12-15', v:'goblet', cue:'Elbows inside the knees, sit deep, drive up tall. Any gym, any home - that is why it is the default.', vars:['Goblet Squat','Belt Squat']},
-    {n:'45-Degree Back Extension', r:'12-15', v:'backext', cue:'Round slightly, hinge at the hips, finish with the glutes.'}]},
+{id:'lowerB', name:'LOWER B', desc:'Trench B - unilateral density', circuits:[
+  {label:'CIRCUIT A', rounds:2, pair:[
+    {n:'Unilateral Leg Extension', r:'12-15 /leg', v:'legext', cue:'Trench pre-fatigue slot, one leg at a time. Full range, control the negative.'},
+    {n:'Hip Adduction Machine', r:'12-15', cue:'Trench slot. Largest comfortable range, control the negative, squeeze at the top.'}]},
+  {label:'CIRCUIT B', rounds:3, pair:[
+    {n:'Bulgarian Split Squat', r:'8-12 /leg', v:'bulgarian', cue:'Trench unilateral squat pattern. Long stride, torso tall, drop straight down. Start with the weaker leg.'},
+    {n:'Seated Good Morning', r:'8-12', cue:'Trench seated hip hinge slot. Perform beltless, sit tall, hinge from the hips, feel the hamstrings load.'}]},
   {label:'CIRCUIT C', rounds:2, pair:[
-    {n:'Seated Calf Raise', r:'15-20', v:'seatedcalf', cue:'Bent knee hits the soleus. Pause at the bottom.'},
-    {n:'Pallof Press', r:'15-20 /side', v:'pallof', cue:'Resist the rotation - ribs down, press straight out, hold.'}]},
-], finisher:{t:'FINISHER - ZONE 2', d:'Incline walk or easy bike, 10 minutes. Flush the legs, keep the engine hot.'}}
+    {n:'Seated Leg Curl', r:'12-15', v:'seatedcurl', cue:'Trench-preferred curl. Full knee extension each rep, squeeze at the top, 2-second negative.'},
+    {n:'Seated Calf Raise', r:'12-15', v:'seatedcalf', cue:'Trench bent-knee calf set. Pause at the bottom, no bounce.'}]},
+  {label:'CIRCUIT D', rounds:2, pair:[
+    {n:'Hip Abduction Machine', r:'12-15', cue:'Trench slot. Pelvis level, lead with the outside of the hip, pause in the lengthened position.'},
+    {n:'Dumbbell Side Bend', r:'12-15 /side', cue:'Trench lateral flexion slot. Spinal lateral flexion only - no torso twist, pause in the stretch.'}]},
+], finisher:{t:'FINISHER - POGO + ZONE 2', d:'2 minutes of pogo jumps (Trench primer - ankles springy, quiet landings), then 8 minutes of incline walking or easy bike. Flush the legs, keep the engine hot.'}}
 ];
 /* videos: neutral third-party, high-production (filled from curated scrape) */
 const VIDEOS = {
