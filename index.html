@@ -3387,7 +3387,7 @@ function targetWeight(ex){
   const wlo=rnd(rm*lo/100),whi=rnd(rm*hi/100);
   return lo===hi?{w:wlo,label:fmtW(wlo)+' '+state.set.unit}:{w:wlo,whi,label:fmtW(wlo)+'-'+fmtW(whi)+' '+state.set.unit};
 }
-function repRange(r){let m=String(r).match(/^(\d+)-(\d+)$/);if(m)return[+m[1],+m[2]];m=String(r).match(/^(\d+)$/);if(m)return[+m[1],+m[1]];return null;}
+function repRange(r){r=String(r).replace(/\s*\/\s*[a-z]+$/i,'');let m=String(r).match(/^(\d+)-(\d+)$/);if(m)return[+m[1],+m[2]];m=String(r).match(/^(\d+)$/);if(m)return[+m[1],+m[1]];return null;}
 function e1rm(w,r){w=parseFloat(w);r=parseFloat(r);if(!w||!r)return 0;return r===1?w:w*(1+r/30);}
 function isBodyweightish(n){return /PULL-UP|CHIN-UP|DIP|PUSH-UP/.test(n);}
 
@@ -3422,6 +3422,7 @@ function progressionHint(ex){
   const w=last.bestW;
   if(last.allTop&&w){
     const inc=isBodyweightish(ex.n)?(state.set.unit==='kg'?1.25:2.5):(state.set.unit==='kg'?2.5:5);
+    if(/ASSISTED/.test(ex.n))return 'Progression: you hit the top of the range on every set last time - drop the assist to '+fmtW(Math.max(0,w-inc))+' '+state.set.unit+' and build back to '+hi+' reps.';
     return 'Progression: you hit the top of the range on every set last time - go up to '+fmtW(w+inc)+' '+state.set.unit+' and build back to '+hi+' reps.';
   }
   if(w)return 'Progression: keep '+fmtW(w)+' '+state.set.unit+' and aim for +1 rep per set until every set hits '+hi+'.';
@@ -3446,6 +3447,7 @@ function suggestedLine(ex){
   const w=last.bestW;
   const inc=isBodyweightish(ex.n)?(state.set.unit==='kg'?1.25:2.5):(state.set.unit==='kg'?2.5:5);
   if(sh)return 'SUGGESTED TODAY: '+fmtW(w)+' '+state.set.unit.toUpperCase()+' (FROM YOUR '+sh.src+' LOG - LOG IT HERE TO START PROGRESSION)';
+  if(last.allTop&&/ASSISTED/.test(ex.n))return 'SUGGESTED TODAY: '+fmtW(Math.max(0,w-inc))+' '+state.set.unit.toUpperCase()+' (LESS ASSIST THAN '+fmtW(w)+' - YOU HIT THE TOP OF THE RANGE)';
   if(last.allTop)return 'SUGGESTED TODAY: '+fmtW(w+inc)+' '+state.set.unit.toUpperCase()+' (UP FROM '+fmtW(w)+' - YOU HIT THE TOP OF THE RANGE)';
   return 'SUGGESTED TODAY: '+fmtW(w)+' '+state.set.unit.toUpperCase()+' (ADD REPS UNTIL EVERY SET HITS '+rr[1]+')';
 }
